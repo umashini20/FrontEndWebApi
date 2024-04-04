@@ -21,32 +21,50 @@ class Mapbox extends React.Component {
     map.on('click', async (e) => {
       const { lngLat } = e;
       try {
-        const response = await axios.get(`http://localhost:3500/weather?latitude=${lngLat.lat}&longitude=${lngLat.lng}`);
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await axios.get(
+          `http://localhost:3500/weather/${lngLat.lat}/${lngLat.lng}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+          );
+          console.log('Response data:', response.data);
+
         const nearestDataPoint = this.findNearestDataPoint(response.data, lngLat.lat, lngLat.lng);
         console.log('Nearest data point:', nearestDataPoint);
         this.setState({ weatherData: nearestDataPoint});
         console.log('Weather data:', response.data);
-        // Display weather data
       } catch (error) {
         console.error('Error fetching weather data:', error);
       }
     });
   }
 
-  findNearestDataPoint(data, lat, lng) {
-    let nearestPoint = null;
-    let minDistance = Number.MAX_VALUE;
+findNearestDataPoint(data, lat, lng) {
+  let nearestPoint = null;
+  let minDistance = Number.MAX_VALUE;
 
+  // Check if data is an array or object
+  if (Array.isArray(data)) {
     data.forEach(point => {
-      const distance = this.calculateDistance(lat, lng, point.lat, point.lon);
+      const distance = this.calculateDistance(lat, lng, point.latitude, point.longitude);
       if (distance < minDistance) {
         minDistance = distance;
         nearestPoint = point;
       }
     });
-
-    return nearestPoint;
+  } else if (typeof data === 'object') {
+    // Handle single data object
+    nearestPoint = data;
+  } else {
+    console.error('Unexpected data format:', data);
+    return null;
   }
+
+  return nearestPoint;
+}
 
   calculateDistance(lat1, lon1, lat2, lon2) {
     const earthRadius = 6371; // Radius of the Earth in kilometers
@@ -90,8 +108,8 @@ class Mapbox extends React.Component {
 
   render() {
     return (
-      <div id="map" style={{ width: '100%', height: '400px' }}>
-        {/* Mapbox map */}
+      <div id="map" style={{ width: '100%', height: '800px' }}>
+        {this.renderWeatherInfo()}
       </div>
     );
   }
