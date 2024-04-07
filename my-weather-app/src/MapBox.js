@@ -42,7 +42,7 @@ class Mapbox extends React.Component {
     try {
       // Fetch districts from the weather API
       const accessToken = localStorage.getItem('accessToken');
-      const response = await axios.get('https://spotless-hen-sari.cyclic.app/weather', {
+      const response = await axios.get('https://webapiproject-bw74.onrender.com/weather', {
           headers: {
               Authorization: `Bearer ${accessToken}`
           }
@@ -64,7 +64,7 @@ class Mapbox extends React.Component {
       const randomAirPressure = (Math.random() * 20 + 980).toFixed(2);
 
       // Send PUT request to update weather data for the random district
-      await axios.put(`https://spotless-hen-sari.cyclic.app/weather/${randomDistrict.latitude}/${randomDistrict.longitude}`, {
+      await axios.put(`https://webapiproject-bw74.onrender.com/weather/${randomDistrict.latitude}/${randomDistrict.longitude}`, {
           temperature: randomTemperature,
           humidity: randomHumidity,
           airPressure: randomAirPressure
@@ -85,7 +85,7 @@ class Mapbox extends React.Component {
     try {
       const accessToken = localStorage.getItem('accessToken');
       const response = await axios.get(
-        `https://spotless-hen-sari.cyclic.app/weather/${lngLat.lat}/${lngLat.lng}`,
+        `https://webapiproject-bw74.onrender.com/weather/${lngLat.lat}/${lngLat.lng}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
